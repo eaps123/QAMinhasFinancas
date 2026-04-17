@@ -1,1 +1,0 @@
-# TODO: Fix Faker Birthdate >18yo in Pessoas.ts\n\n- [ ] Step 1: Fix TypeScript imports (require -> import)\n- [ ] Step 2: Add generateAdultBirthDate() function\n- [ ] Step 3: Update test to use new birthdate\n- [ ] Step 4: Test with npx playwright test tests/e2e/Pessoas.ts\n- [ ] Step 5: attempt_completion\n
