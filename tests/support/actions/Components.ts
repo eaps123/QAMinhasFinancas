@@ -9,6 +9,7 @@ export const UI = {
         CONFIRM: 'Confirmar',
         EDIT: 'Editar',
         DELETE: 'Deletar',
+        SAVE: 'Salvar',
         ADD_CATEGORY: 'Adicionar Categoria',
         ADD_LEAD: 'Adicionar Pessoa',
         ADD_TRANSACTION: 'Adicionar Transação'
