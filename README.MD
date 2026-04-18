@@ -2,7 +2,12 @@ Melhorias automação:
 
 1. Fazer o modal se tornar um componente modular, juntamente com os botões usados;
 2. Alocar as mensagens de retorno mapeadas em um unico local;
-3. 
+3. Criar as tasks abaixo:
+NaoDeveConsiderarTransacoesForaDoPeriodo()
+DeveRetornarSaldoNegativo_QuandoDespesasMaiorQueReceitas()
+DeveSepararTotaisPorPessoa()
+DeveAgruparCorretamentePorCategoria()
+4. 
 
 Melhorias para desenvolvedores:
 
