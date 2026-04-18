@@ -1,36 +1,64 @@
 import { test as base, expect } from '@playwright/test';
-import { Toast, Popup, Paginations } from './actions/Components';
-import { Leads } from './actions/Leads';
-import { Category } from './actions/Category';
+import {
+    Toast,
+    Popup,
+    Paginations,
+    HaveText,
+    Find,
+    Form,
+    Visit,
+    Modal,
+    Click,
+} from './actions/Components.js';
 
 type Actions = {
-  leads: Leads;
-  toast: Toast;
-  popup: Popup;
-  category: Category;
-  paginations: Paginations;
+    modal: Modal;
+    toast: Toast;
+    popup: Popup;
+    haveText: HaveText;
+    find: Find;
+    paginations: Paginations;
+    form: Form;
+    visit: Visit;
+    click: Click;
 };
 
 export const test = base.extend<Actions>({
-  leads: async ({ page }, use) => {
-    await use(new Leads(page));
-  },
+    click: async ({ page }, use) => {
+        await use(new Click(page));
+    },
 
-  category: async ({ page }, use) => {
-    await use(new Category(page));
-  },
+    modal: async ({ page }, use) => {
+        await use(new Modal(page));
+    },
 
-  paginations: async ({ page }, use) => {
-    await use(new Paginations(page));
-  },
+    form: async ({ page }, use) => {
+        await use(new Form(page));
+    },
 
-  toast: async ({ page }, use) => {
-    await use(new Toast(page));
-  },
+    haveText: async ({ page }, use) => {
+        await use(new HaveText(page));
+    },
 
-  popup: async ({ page }, use) => {
-    await use(new Popup(page));
-  },
+    find: async ({ page }, use) => {
+        await use(new Find(page));
+    },
+
+    visit: async ({ page }, use) => {
+        await use(new Visit(page));
+    },
+
+    paginations: async ({ page }, use) => {
+        await use(new Paginations(page));
+    },
+
+    toast: async ({ page }, use) => {
+        await use(new Toast(page));
+    },
+
+    popup: async ({ page }, use) => {
+        await use(new Popup(page));
+    },
 });
 
 export { expect };

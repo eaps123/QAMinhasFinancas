@@ -43,12 +43,7 @@ export class Category {
             this.page.getByLabel('Tabela de dados')
         ).toBeVisible();
     }
-    async deleteLeadModal(): Promise<void> {
-        await this.page.getByRole('button', { name: /Confirmar/ }).click();
-        await expect(
-            this.page.getByLabel('Tabela de dados')
-        ).toBeVisible();
-    }
+
     async cancelCategoryForm(): Promise<void> {
         await this.page.getByRole('button', { name: /Cancelar/ }).click();
         await expect(
