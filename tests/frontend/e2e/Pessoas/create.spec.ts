@@ -3,99 +3,95 @@ import { faker as fakerLib } from '@faker-js/faker';
 const faker = fakerLib;
 faker.locale = 'pt_BR';
 
-test('deve cadastrar uma pessoa', async ({ leads, toast }) => {
+test('deve cadastrar uma pessoa', async ({ visit, modal, toast, form }) => {
   const leadName = faker.name.fullName();
   const leadData = faker.date
     .birthdate({ mode: 'age', min: 18, max: 123 })
     .toISOString()
     .split('T')[0];
 
-  await leads.visit();
-  await leads.openLeadModal();
-  await leads.submitLeadForm(leadName, leadData);
+  await visit.Leads();
+  await modal.openModal('Adicionar Pessoa');
+  await form.submitLeadForm(leadName, leadData);
+  await modal.buttonModal('Salvar');
   const message = 'Pessoa salva com sucesso!';
   await toast.containText(message);
 });
 
-test('deve cancelar o cadastro de pessoa', async ({ leads }) => {
+test('deve cancelar o cadastro de pessoa', async ({ visit, modal }) => {
   const leadName = faker.name.fullName();
   const leadData = faker.date
     .birthdate({ mode: 'age', min: 18, max: 123 })
     .toISOString()
     .split('T')[0];
-  await leads.visit();
-  await leads.openLeadModal();
-  await leads.cancelLeadForm(leadName, leadData);
+  await visit.Leads();
+  await modal.openModal('Adicionar Pessoa');
+  await modal.buttonModal('Cancelar');
 });
 
-test('deve fechar o cadastro de pessoa', async ({ leads }) => {
+test('deve fechar o cadastro de pessoa', async ({ visit, modal }) => {
   const leadName = faker.name.fullName();
   const leadData = faker.date
     .birthdate({ mode: 'age', min: 18, max: 123 })
     .toISOString()
     .split('T')[0];
-  await leads.visit();
-  await leads.openLeadModal();
-  await leads.closeLeadModal();
+  await visit.Leads();
+  await modal.openModal('Adicionar Pessoa');
+  await modal.buttonModal('Close');
 });
 
-test('deve clickar fora do modal de cadastro de pessoa e fechar', async ({ leads }) => {
-  await leads.visit();
-  await leads.openLeadModal();
-  await leads.outsideLeadModal();
+test('deve clickar fora do modal de cadastro de pessoa e fechar', async ({ visit, modal }) => {
+  await visit.Leads();
+  await modal.openModal('Adicionar Pessoa');
+  await modal.outsideModal();
 });
 
-test('não deve cadastrar quando o nome não é preenchido', async ({ leads }) => {
+test('não deve cadastrar quando o nome não é preenchido', async ({ visit, modal, haveText, form }) => {
   const leadData = faker.date
     .birthdate({ mode: 'age', min: 18, max: 123 })
     .toISOString()
     .split('T')[0];
-  await leads.visit();
-  await leads.openLeadModal();
-  await leads.submitLeadForm('', leadData);
-
-  await leads.errorHaveText('Nome é obrigatório');
+  await visit.Leads();
+  await modal.openModal('Adicionar Pessoa');
+  await form.submitLeadForm('', leadData);
+  await haveText.errorHaveText('Nome é obrigatório');
 });
 
-test('não deve cadastrar quando a data não é preenchido', async ({ leads }) => {
-  await leads.visit();
-  await leads.openLeadModal();
-  await leads.submitLeadForm('Everton Alves', '');
-
-  await leads.errorHaveText('Invalid input: expected date, received Date');
+test('não deve cadastrar quando a data não é preenchido', async ({ visit, modal, haveText, form }) => {
+  await visit.Leads();
+  await modal.openModal('Adicionar Pessoa');
+  await form.submitLeadForm('Everton Alves', '');
+  await haveText.errorHaveText('Invalid input: expected date, received Date');
 });
 
-test('não deve cadastrar quando nenhum campo é preenchido', async ({ leads }) => {
-  await leads.visit();
-  await leads.openLeadModal();
-  await leads.submitLeadForm('', '');
-
-  await leads.errorHaveText('Nome é obrigatório');
-  await leads.errorHaveText('Invalid input: expected date, received Date');
+test('não deve cadastrar quando nenhum campo é preenchido', async ({ visit, modal, haveText, form }) => {
+  await visit.Leads();
+  await modal.openModal('Adicionar Pessoa');
+  await form.submitLeadForm('', '');
+  await haveText.errorHaveText('Nome é obrigatório');
+  await haveText.errorHaveText('Invalid input: expected date, received Date');
 });
 
-test('não deve cadastrar com data inválida', async ({ leads }) => {
+test('não deve cadastrar com data inválida', async ({ visit, modal, haveText, form }) => {
   const leadName = faker.name.fullName();
   const leadData = faker.date
     .birthdate({ mode: 'age', min: 150, max: 223 })
     .toISOString()
     .split('T')[0];
-  await leads.visit();
-  await leads.openLeadModal();
-  await leads.submitLeadForm(leadName, leadData);
-
-  await leads.errorHaveText('Invalid input: expected date, received Date');
+  await visit.Leads();
+  await modal.openModal('Adicionar Pessoa');
+  await form.submitLeadForm(leadName, leadData);
+  await haveText.errorHaveText('Invalid input: expected date, received Date');
 });
 
-test('não deve cadastrar com nome inválido', async ({ leads }) => {
+test('não deve cadastrar com nome inválido', async ({ visit, modal, haveText, form }) => {
   const leadName = faker.random.numeric(10);
   const leadData = faker.date
     .birthdate({ mode: 'age', min: 18, max: 123 })
     .toISOString()
     .split('T')[0];
-  await leads.visit();
-  await leads.openLeadModal();
-  await leads.submitLeadForm(leadName + '@#$%!¨&*()_-=+{`}?', leadData);
-
-  await leads.errorHaveText('Nome é obrigatório');
+  await visit.Leads();
+  await modal.openModal('Adicionar Pessoa');
+  await form.submitLeadForm(leadName + '@#$%!¨&*()_-=+{`}?', leadData);
+  await haveText.errorHaveText('Nome é obrigatório');
 });
