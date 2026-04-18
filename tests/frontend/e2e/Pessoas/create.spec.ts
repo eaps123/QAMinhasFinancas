@@ -1,4 +1,4 @@
-import { test, expect } from '../../support';
+import { test, expect } from '../../../support';
 import { faker as fakerLib } from '@faker-js/faker';
 const faker = fakerLib;
 faker.locale = 'pt_BR';

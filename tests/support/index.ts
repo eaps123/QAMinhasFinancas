@@ -3,6 +3,7 @@ import { Toast, Popup, Paginations } from './actions/Components.js';
 import { Leads } from './actions/Leads.js';
 import { Category } from './actions/Category.js';
 import { Reports } from './actions/Reports.js';
+import { Transactions } from './actions/Transactions.js';
 
 type Actions = {
   leads: Leads;
@@ -11,11 +12,16 @@ type Actions = {
   reports: Reports;
   category: Category;
   paginations: Paginations;
+  transactions: Transactions;
 };
 
 export const test = base.extend<Actions>({
   leads: async ({ page }, use) => {
     await use(new Leads(page));
+  },
+
+  transactions: async ({ page }, use) => {
+    await use(new Transactions(page));
   },
 
   reports: async ({ page }, use) => {
