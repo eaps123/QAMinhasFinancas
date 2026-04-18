@@ -115,3 +115,41 @@ export class Paginations {
         }
     }
 }
+
+export class Modal {
+    readonly page: Page;
+
+    constructor(page: Page) {
+        this.page = page;
+    }
+
+    async openModal(name: string): Promise<void> {
+        await this.page.getByRole('button', {name}).click();
+        const modal = this.page.getByRole('dialog');
+        await expect(
+            modal.getByRole('heading', {name})
+        ).toBeVisible();
+    }
+
+    async outsideModal(): Promise<void> {
+        const dialog = this.page.getByRole('dialog');
+        await this.page.mouse.click(0, 0);
+        await expect(dialog).not.toBeVisible();
+        await expect(
+            this.page.getByLabel('Tabela de dados')
+        ).toBeVisible();
+    }
+
+    async buttonModal(name: string): Promise<void> {
+        await this.page.getByRole('button', {name}).click();
+        await expect(
+            this.page.getByLabel('Tabela de dados')
+        ).toBeVisible();
+    }
+
+    async selectOptions(value: string, locator: string ): Promise<void> {
+        const select = this.page.locator(locator);
+        await select.selectOption(value);
+        await expect(select).toHaveValue(value);
+    }
+}
