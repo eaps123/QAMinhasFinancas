@@ -14,12 +14,25 @@ export const UI = {
         ADD_LEAD: 'Adicionar Pessoa',
         ADD_TRANSACTION: 'Adicionar Transação'
     },
+    VALUE: {
+        DESPESA: 'despesa',
+        RECEITA: 'receita',
+        AMBAS: 'ambas',
+    },
     MESSAGES: {
         PUT_LEAD_SUCCESS: 'Pessoa atualizada com sucesso!',
         POST_LEAD_SUCCESS: 'Pessoa salva com sucesso!',
+        POST_CATEGORY_SUCCESS: 'Categoria salva com sucesso!',
+        PUT_LEAD_FAILED: 'Erro ao salvar pessoa. Tente novamente.',
+        NAME_REQUIRED: 'Nome é obrigatório',
+        DESCRIPTION_REQUIRED: 'Descrição é obrigatória',
+        INVALID_DATE: 'Invalid input: expected date, received Date'
     },
     LABELS: {
-        DATA_TABLE: 'Tabela de dados'
+        DATA_TABLE: 'Tabela de dados',
+        DESPESA: 'Despesa',
+        RECEITA: 'Receita',
+        AMBAS: 'Ambas',
     },
     PAGINATION: {
         REGEX: /Mostrando (\d+) - (\d+) de (\d+)/
@@ -69,15 +82,15 @@ export class Paginations {
     async clickNextPage(): Promise<void> {
         await this.page.getByRole('button', { name: UI.BUTTONS.NEXT }).click();
     }
-    
+
     async isNextDisabled(): Promise<boolean> {
         return await this.page.getByRole('button', { name: UI.BUTTONS.NEXT }).isDisabled();
     }
-    
+
     async clickPreviousPage(): Promise<void> {
         await this.page.getByRole('button', { name: UI.BUTTONS.PREVIOUS }).click();
     }
-    
+
     async isPreviousDisabled(): Promise<boolean> {
         return await this.page.getByRole('button', { name: UI.BUTTONS.PREVIOUS }).isDisabled();
     }
@@ -150,18 +163,21 @@ export class Modal {
     }
 
     async openModal(name: string): Promise<void> {
-        await this.page.getByRole('button', {name}).click();
+        await expect(
+            this.page.getByLabel(UI.LABELS.DATA_TABLE)
+        ).toBeVisible();
+        await this.page.getByRole('button', { name }).click();
         const modal = this.page.getByRole('dialog');
         await expect(
-            modal.getByRole('heading', {name})
+            modal.getByRole('heading', { name })
         ).toBeVisible();
     }
 
     async openModalFirst(name: string): Promise<void> {
-        await this.page.getByRole('button', {name}).first().click();
+        await this.page.getByRole('button', { name }).first().click();
         const modal = this.page.getByRole('dialog');
         await expect(
-            modal.getByRole('heading', {name})
+            modal.getByRole('heading', { name })
         ).toBeVisible();
     }
 
@@ -175,20 +191,20 @@ export class Modal {
     }
 
     async buttonModal(name: string): Promise<void> {
-        await this.page.getByRole('button', {name}).click();
+        await this.page.getByRole('button', { name }).click();
         await expect(
             this.page.getByLabel(UI.LABELS.DATA_TABLE)
         ).toBeVisible();
     }
 
-    async selectOptions(value: string, locator: string ): Promise<void> {
-        const select = this.page.locator(locator);
+    async selectFinalidade(value: string): Promise<void> {
+        const select = this.page.locator('#finalidade');
         await select.selectOption(value);
         await expect(select).toHaveValue(value);
     }
 }
 
-export class Visit{
+export class Visit {
     readonly page: Page;
 
     constructor(page: Page) {
@@ -209,7 +225,7 @@ export class Visit{
     }
 }
 
-export class Form{
+export class Form {
     readonly page: Page;
 
     constructor(page: Page) {
@@ -232,7 +248,7 @@ export class Form{
     }
 }
 
-export class Find{
+export class Find {
     readonly page: Page;
 
     constructor(page: Page) {
@@ -241,12 +257,15 @@ export class Find{
 
     async findLeadByName(): Promise<void> {
         await expect(
-            this.page.locator(':has-text("Automation")'
-            )).toBeVisible();
+            this.page.locator(':has-text("1- Automation")').first()
+        ).toBeVisible();
+    }
+    locatorFinalidade(): Locator {
+        return this.page.locator('#finalidade');
     }
 }
 
-export class HaveText{
+export class HaveText {
     readonly page: Page;
 
     constructor(page: Page) {
@@ -263,13 +282,13 @@ export class HaveText{
     }
 }
 
-export class Click{
+export class Click {
     readonly page: Page;
 
     constructor(page: Page) {
         this.page = page;
     }
-    
+
     async ByName(name: string, buttonLabel: string): Promise<void> {
         const row = this.page.getByRole('row', { name: new RegExp(name, 'i') });
         await row.getByRole('button', { name: buttonLabel }).click();
