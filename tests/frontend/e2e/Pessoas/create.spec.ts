@@ -44,34 +44,37 @@ test('não deve cadastrar quando o nome não é preenchido', async ({ visit, mod
   await visit.Leads();
   await modal.openModal(UI.BUTTONS.ADD_LEAD);
   await form.submitLeadForm('', leadData);
-  await haveText.errorHaveText('Nome é obrigatório');
+  await modal.buttonModal(UI.BUTTONS.SAVE);
+  await haveText.errorHaveText(UI.MESSAGES.NAME_REQUIRED);
 });
 
 test('não deve cadastrar quando a data não é preenchida', async ({ visit, modal, haveText, form }) => {
   await visit.Leads();
   await modal.openModal(UI.BUTTONS.ADD_LEAD);
   await form.submitLeadForm('Everton Alves', '');
-  await haveText.errorHaveText('Invalid input: expected date, received Date');
+  await modal.buttonModal(UI.BUTTONS.SAVE);
+  await haveText.errorHaveText(UI.MESSAGES.INVALID_DATE);
 });
 
 test('não deve cadastrar quando nenhum campo é preenchido', async ({ visit, modal, haveText, form }) => {
   await visit.Leads();
   await modal.openModal(UI.BUTTONS.ADD_LEAD);
   await form.submitLeadForm('', '');
-  await haveText.errorHaveText('Nome é obrigatório');
-  await haveText.errorHaveText('Invalid input: expected date, received Date');
+  await modal.buttonModal(UI.BUTTONS.SAVE);
+  await haveText.errorHaveText(UI.MESSAGES.NAME_REQUIRED);
+  await haveText.errorHaveText(UI.MESSAGES.INVALID_DATE);
 });
 
-test('não deve cadastrar com data inválida', async ({ visit, modal, haveText, form }) => {
+test('não deve cadastrar com data futura', async ({ visit, modal, haveText, form }) => {
   const leadName = faker.name.fullName();
-  const leadData = faker.date
-    .birthdate({ mode: 'age', min: 150, max: 223 })
-    .toISOString()
-    .split('T')[0];
+  const leadData = new Date();
+    leadData.setDate(leadData.getDate() + 1);
+    const dataFutura = leadData.toISOString().split('T')[0];
   await visit.Leads();
   await modal.openModal(UI.BUTTONS.ADD_LEAD);
-  await form.submitLeadForm(leadName, leadData);
-  await haveText.errorHaveText('Invalid input: expected date, received Date');
+  await form.submitLeadForm(leadName, dataFutura);
+  await modal.buttonModal(UI.BUTTONS.SAVE);
+  await haveText.errorHaveText(UI.MESSAGES.PUT_LEAD_FAILED);
 });
 
 test('não deve cadastrar com nome inválido', async ({ visit, modal, haveText, form }) => {
@@ -82,6 +85,7 @@ test('não deve cadastrar com nome inválido', async ({ visit, modal, haveText, 
     .split('T')[0];
   await visit.Leads();
   await modal.openModal(UI.BUTTONS.ADD_LEAD);
-  await form.submitLeadForm(leadName + '@#$%!¨&*()_-=+{`}?', leadData);
-  await haveText.errorHaveText('Nome é obrigatório');
+  await form.submitLeadForm(leadName + '@#$%!¨&*()_-=+{`}?👌', leadData);
+  await modal.buttonModal(UI.BUTTONS.SAVE);
+  await haveText.errorHaveText(UI.MESSAGES.NAME_REQUIRED);
 });
