@@ -30,6 +30,8 @@ export const UI = {
     },
     LABELS: {
         DATA_TABLE: 'Tabela de dados',
+        LEAD_LIST: 'Lista de pessoas',
+        CATEGOY_LIST: 'Lista de categorias',
         DESPESA: 'Despesa',
         RECEITA: 'Receita',
         AMBAS: 'Ambas',
@@ -202,6 +204,19 @@ export class Modal {
         await select.selectOption(value);
         await expect(select).toHaveValue(value);
     }
+
+    async labelModalLead(): Promise<void> {
+        await this.page.getByRole('button', { name: 'Abrir' }).first().click();
+        const label = this.page.getByLabel(UI.LABELS.LEAD_LIST);
+        await label.getByRole('option').first().click();
+    }
+
+    async labelModalCategory(): Promise<void> {
+        await this.page.getByRole('button', { name: 'Abrir' }).first().click();
+        const label = this.page.getByLabel(UI.LABELS.CATEGOY_LIST);
+        await label.getByRole('option').first().click();
+    }
+
 }
 
 export class Visit {
@@ -242,7 +257,7 @@ export class Form {
         await this.page.locator('input[name="dataNascimento"]').fill(data);
     }
 
-    async submitTransactionsForm(name: string, data: string): Promise<void> {
+    async submitTransactionsForm(name: string, data: string, numeric: number): Promise<void> {
         await this.page.getByPlaceholder('Digite o nome').fill(name);
         await this.page.locator('input[name="dataNascimento"]').fill(data);
     }
@@ -262,6 +277,9 @@ export class Find {
     }
     locatorFinalidade(): Locator {
         return this.page.locator('#finalidade');
+    }
+    locatorTipo(): Locator {
+        return this.page.locator('tipo');
     }
 }
 
