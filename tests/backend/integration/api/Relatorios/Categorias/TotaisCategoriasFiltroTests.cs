@@ -1,6 +1,7 @@
 using Xunit;
 using FluentAssertions;
 using System.Net;
+using System.Net.Http.Json;
 using Newtonsoft.Json.Linq;
 
 public class TotaisCategoriasFiltroTests : BaseTest
@@ -40,7 +41,7 @@ public class TotaisCategoriasFiltroTests : BaseTest
             tipo = 2,
             categoriaId = catA["id"],
             pessoaId = pessoa["id"],
-            data = DateTime.Now
+            data = DateTime.UtcNow.ToString("yyyy-MM-ddTHH:mm:ss")
         });
         await _client.PostAsJsonAsync("/api/v1/Transacoes", new
         {
@@ -49,13 +50,17 @@ public class TotaisCategoriasFiltroTests : BaseTest
             tipo = 2,
             categoriaId = catB["id"],
             pessoaId = pessoa["id"],
-            data = DateTime.Now
+            data = DateTime.UtcNow.ToString("yyyy-MM-ddTHH:mm:ss")
         });
         var response = await _client.GetAsync($"/api/v1/Totais/categorias?Categoria.Id={catA["id"]}");
         var json = JObject.Parse(await response.Content.ReadAsStringAsync());
-        var item = json["items"][0];
-        item["categoriaId"].ToString().Should().Be(catA["id"].ToString());
-        item["totalDespesas"].Value<decimal>().Should().Be(100);
+        var items = json["items"]!.Children();
+        var item = items.FirstOrDefault(x =>
+            x["categoriaId"]!.ToString() == catA["id"]!.ToString()
+        );
+        item.Should().NotBeNull("a categoria filtrada deve existir no retorno");
+        item!["categoriaId"]!.ToString().Should().Be(catA["id"]!.ToString());
+        item["totalDespesas"]!.Value<decimal>().Should().Be(100);
     }
     [Fact]
     public async Task DeveConsiderarApenasTransacoesDentroDoPeriodo()
@@ -79,7 +84,7 @@ public class TotaisCategoriasFiltroTests : BaseTest
             tipo = 2,
             categoriaId = categoria["id"],
             pessoaId = pessoa["id"],
-            data = DateTime.Now.AddMonths(-2)
+            data = DateTime.Now.AddMonths(-2).ToString("yyyy-MM-ddTHH:mm:ssZ")
         });
         await _client.PostAsJsonAsync("/api/v1/Transacoes", new
         {
@@ -88,14 +93,18 @@ public class TotaisCategoriasFiltroTests : BaseTest
             tipo = 2,
             categoriaId = categoria["id"],
             pessoaId = pessoa["id"],
-            data = DateTime.Now
+            data = DateTime.UtcNow.ToString("yyyy-MM-ddTHH:mm:ssZ")
         });
-        var inicio = DateTime.Now.AddDays(-10).ToString("o");
-        var fim = DateTime.Now.ToString("o");
+        var inicio = DateTime.Now.AddDays(-1).ToString("yyyy-MM-ddTHH:mm:ssZ");
+        var fim = DateTime.Now.ToString("yyyy-MM-ddTHH:mm:ssZ");
         var response = await _client.GetAsync(
             $"/api/v1/Totais/categorias?Periodo.DataInicio={inicio}&Periodo.DataFim={fim}");
         var json = JObject.Parse(await response.Content.ReadAsStringAsync());
-        var item = json["items"][0];
-        item["totalDespesas"].Value<decimal>().Should().Be(300);
+        var items = json["items"]!.Children();
+        var item = items.FirstOrDefault(x =>
+            x["categoriaId"]!.ToString() == categoria["id"]!.ToString()
+        );
+        item.Should().NotBeNull("a categoria deve existir no retorno");
+        item!["totalDespesas"]!.Value<decimal>().Should().Be(300);
     }
 }

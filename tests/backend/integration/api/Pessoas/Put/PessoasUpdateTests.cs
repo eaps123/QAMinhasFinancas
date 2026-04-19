@@ -1,3 +1,8 @@
+using Xunit;
+using FluentAssertions;
+using System.Net;
+using System.Net.Http.Json;
+using Newtonsoft.Json.Linq;
 public class PessoasUpdateTests : BaseTest
 {
     public PessoasUpdateTests(ApiFixture fixture) : base(fixture) { }
