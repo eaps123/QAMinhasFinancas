@@ -1,3 +1,8 @@
+using Xunit;
+using FluentAssertions;
+using System.Net;
+using System.Net.Http.Json;
+using Newtonsoft.Json.Linq;
 public class TransacoesPaginationTests : BaseTest
 {
     public TransacoesPaginationTests(ApiFixture fixture) : base(fixture) { }
@@ -6,6 +11,6 @@ public class TransacoesPaginationTests : BaseTest
     {
         var response = await _client.GetAsync("/api/v1/Transacoes?pageSize=5");
         var json = JObject.Parse(await response.Content.ReadAsStringAsync());
-        json["items"].Count().Should().BeLessOrEqualTo(5);
+        json["items"].Count().Should().BeLessThanOrEqualTo(5);
     }
 }

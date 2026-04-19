@@ -1,3 +1,8 @@
+using Xunit;
+using FluentAssertions;
+using System.Net;
+using System.Net.Http.Json;
+using Newtonsoft.Json.Linq;
 public class TransacoesValidationTests : BaseTest
 {
     public TransacoesValidationTests(ApiFixture fixture) : base(fixture) { }
@@ -12,7 +17,7 @@ public class TransacoesValidationTests : BaseTest
             tipo = 1,
             categoriaId = transacao.GetType().GetProperty("categoriaId")?.GetValue(transacao),
             pessoaId = transacao.GetType().GetProperty("pessoaId")?.GetValue(transacao),
-            data = DateTime.Now
+            data = DateTime.UtcNow.Date
         };
         var response = await _client.PostAsJsonAsync("/api/v1/Transacoes", payload);
         response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
@@ -30,7 +35,7 @@ public class TransacoesValidationTests : BaseTest
             tipo = 1,
             categoriaId = Guid.NewGuid(),
             pessoaId = pessoaJson["id"],
-            data = DateTime.Now
+            data = DateTime.UtcNow.Date
         });
         response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
     }
@@ -50,7 +55,7 @@ public class TransacoesValidationTests : BaseTest
             tipo = 1,
             categoriaId = categoria["id"],
             pessoaId = Guid.NewGuid(),
-            data = DateTime.Now
+            data = DateTime.UtcNow.Date
         });
         response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
     }
@@ -65,7 +70,7 @@ public class TransacoesValidationTests : BaseTest
             tipo = 1,
             categoriaId = transacao.GetType().GetProperty("categoriaId")?.GetValue(transacao),
             pessoaId = transacao.GetType().GetProperty("pessoaId")?.GetValue(transacao),
-            data = DateTime.Now.AddDays(1)
+            data = DateTime.UtcNow.Date.AddDays(1)
         };
         var response = await _client.PostAsJsonAsync("/api/v1/Transacoes", payload);
         response.StatusCode.Should().Be(HttpStatusCode.BadRequest);

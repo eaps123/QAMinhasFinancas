@@ -1,3 +1,8 @@
+using Xunit;
+using FluentAssertions;
+using System.Net;
+using System.Net.Http.Json;
+using Newtonsoft.Json.Linq;
 public class TransacoesByIdTests : BaseTest
 {
     public TransacoesByIdTests(ApiFixture fixture) : base(fixture) { }

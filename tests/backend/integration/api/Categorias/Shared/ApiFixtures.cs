@@ -1,12 +1,16 @@
-using Microsoft.AspNetCore.Mvc.Testing;
-
+using Xunit;
+using FluentAssertions;
+using System.Net;
+using System.Net.Http.Json;
+using Newtonsoft.Json.Linq;
 public class ApiFixture
 {
     public HttpClient Client { get; }
-
     public ApiFixture()
     {
-        var factory = new WebApplicationFactory<Program>();
-        Client = factory.CreateClient();
+        Client = new HttpClient
+        {
+            BaseAddress = new Uri("http://localhost:5000")
+        };
     }
 }
