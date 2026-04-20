@@ -25,6 +25,7 @@ export const UI = {
         POST_LEAD_SUCCESS: 'Pessoa salva com sucesso!',
         POST_CATEGORY_SUCCESS: 'Categoria salva com sucesso!',
         POST_TRANSACTION_SUCCESS: 'Transação salva com sucesso!',
+        POST_TRANSACTION_FAILED: 'Erro ao salvar transação. Tente novamente.',
         PUT_LEAD_FAILED: 'Erro ao salvar pessoa. Tente novamente.',
         NAME_REQUIRED: 'Nome é obrigatório',
         DESCRIPTION_REQUIRED: 'Descrição é obrigatória',
@@ -33,6 +34,8 @@ export const UI = {
         INVALID_STRING: 'Invalid input: expected string, received undefined',
         NEGATIVE_VALUE: 'Valor deve ser positivo',
         DESCRIBE_REQUIRED: 'Descrição é obrigatória',
+        KID_NO_TRANSACTION: 'Menores de 18 anos não podem registrar receitas',
+        KID_ALERT: 'Menores só podem registrar despesas.',
     },
     LABELS: {
         DATA_TABLE: 'Tabela de dados',
@@ -41,6 +44,13 @@ export const UI = {
         DESPESA: 'Despesa',
         RECEITA: 'Receita',
         AMBAS: 'Ambas',
+    },
+    SELECT:{
+        DESPESA: '12 Despesa',
+        RECEITA: '12 Receita',
+        AMBAS: '1 Receita e despesa',
+        MENOR: '1- Automation KID',
+        COMPLETO: '1- Automation Completo',
     },
     PAGINATION: {
         REGEX: /Mostrando (\d+) - (\d+) de (\d+)/
@@ -55,9 +65,9 @@ export class Toast {
     }
 
     async containText(message: string): Promise<void> {
-        const toast = this.page.getByRole('status');
-        await expect(toast).toContainText(message);
-        await expect(toast).not.toBeVisible({ timeout: 5000 });
+        await expect(
+            this.page.locator('[role="status"]')
+        ).toContainText(message, { timeout: 5000 });
     }
 }
 
@@ -161,6 +171,26 @@ export class Paginations {
             ]);
         }
     }
+
+    async itemExistsInTable(name: string): Promise<boolean> {
+        const nextButton = this.page.getByRole('button', { name: UI.BUTTONS.NEXT });
+        await expect(this.page.locator('tbody tr').first()).toBeVisible();
+        while (true) {
+            const row = this.page.locator('tbody tr').filter({
+                has: this.page.locator('td:first-child', {
+                    hasText: new RegExp(`^${name}$`)
+                })
+            }).first();
+            if (await row.isVisible().catch(() => false)) {
+                return true;
+            }
+            if (await nextButton.isDisabled()) {
+                return false;
+            }
+            await nextButton.click();
+            await expect(this.page.locator('tbody tr').first()).toBeVisible();
+        }
+    }
 }
 
 export class Modal {
@@ -206,7 +236,10 @@ export class Modal {
         await this.page.getByRole('button', { name }).click();
         await expect(
             this.page.getByLabel(UI.LABELS.DATA_TABLE)
-        ).toBeVisible();
+        ).toBeVisible({timeout: 5000});
+    }
+    async buttonModalErro(name: string): Promise<void> {
+        await this.page.getByRole('button', { name }).click();
     }
 
     async selectFinalidade(value: string): Promise<void> {
@@ -227,7 +260,19 @@ export class Modal {
         await label.getByRole('option').first().click();
     }
 
-    async labelModalCategory(): Promise<void> {
+    async labelModalLeadName(name: string): Promise<void> {
+        await this.page.getByRole('button', { name: 'Abrir' }).first().click();
+        await this.page
+            .getByRole('listbox', { name: 'Lista de pessoas' })
+            .waitFor({ state: 'visible' });
+        await this.page
+            .locator('[aria-controls="pessoa-select-options"]')
+            .click();
+        const label = this.page.getByLabel(UI.LABELS.LEAD_LIST);
+        await label.getByRole('option',{name: name}).first().click();
+    }
+
+    async labelModalCategory(name: string): Promise<void> {
         await this.page.getByRole('button', { name: 'Abrir' }).last().click();
         await this.page
             .getByRole('listbox', { name: 'Lista de categorias' })
@@ -236,7 +281,7 @@ export class Modal {
             .locator('[aria-controls="categoria-select-options"]')
             .click();
         const label = this.page.getByLabel(UI.LABELS.CATEGOY_LIST);
-        await label.getByRole('option').first().click();
+        await label.getByRole('option',{name: name}).first().click();
     }
 
     async selectTipo(value: string): Promise<void> {
@@ -263,16 +308,16 @@ export class Visit {
         this.page = page;
     }
     async Transactions(): Promise<void> {
-        await this.page.goto('/transacoes');
+        await this.page.goto('/transacoes', { waitUntil: 'networkidle'});
     }
     async Leads(): Promise<void> {
-        await this.page.goto('/pessoas');
+        await this.page.goto('/pessoas', { waitUntil: 'networkidle'});
     }
     async Category(): Promise<void> {
-        await this.page.goto('/categorias');
+        await this.page.goto('/categorias', { waitUntil: 'networkidle'});
     }
     async Reports(): Promise<void> {
-        await this.page.goto('/totais');
+        await this.page.goto('/totais', { waitUntil: 'networkidle'});
     }
 }
 
