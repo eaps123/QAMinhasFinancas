@@ -10,6 +10,7 @@ export const UI = {
         EDIT: 'Editar',
         DELETE: 'Deletar',
         SAVE: 'Salvar',
+        OPEN: 'Abrir',
         ADD_CATEGORY: 'Adicionar Categoria',
         ADD_LEAD: 'Adicionar Pessoa',
         ADD_TRANSACTION: 'Adicionar Transação'
@@ -23,13 +24,20 @@ export const UI = {
         PUT_LEAD_SUCCESS: 'Pessoa atualizada com sucesso!',
         POST_LEAD_SUCCESS: 'Pessoa salva com sucesso!',
         POST_CATEGORY_SUCCESS: 'Categoria salva com sucesso!',
+        POST_TRANSACTION_SUCCESS: 'Transação salva com sucesso!',
         PUT_LEAD_FAILED: 'Erro ao salvar pessoa. Tente novamente.',
         NAME_REQUIRED: 'Nome é obrigatório',
         DESCRIPTION_REQUIRED: 'Descrição é obrigatória',
-        INVALID_DATE: 'Invalid input: expected date, received Date'
+        INVALID_DATE: 'Invalid input: expected date, received Date',
+        INVALID_VALUE: 'Invalid input: expected number, received NaN',
+        INVALID_STRING: 'Invalid input: expected string, received undefined',
+        NEGATIVE_VALUE: 'Valor deve ser positivo',
+        DESCRIBE_REQUIRED: 'Descrição é obrigatória',
     },
     LABELS: {
         DATA_TABLE: 'Tabela de dados',
+        LEAD_LIST: 'Lista de pessoas',
+        CATEGOY_LIST: 'Lista de categorias',
         DESPESA: 'Despesa',
         RECEITA: 'Receita',
         AMBAS: 'Ambas',
@@ -161,6 +169,10 @@ export class Modal {
     constructor(page: Page) {
         this.page = page;
     }
+    
+    locatorTipo(): Locator {
+        return this.page.locator('#tipo');
+    }
 
     async openModal(name: string): Promise<void> {
         await expect(
@@ -202,6 +214,46 @@ export class Modal {
         await select.selectOption(value);
         await expect(select).toHaveValue(value);
     }
+
+    async labelModalLead(): Promise<void> {
+        await this.page.getByRole('button', { name: 'Abrir' }).first().click();
+        await this.page
+            .getByRole('listbox', { name: 'Lista de pessoas' })
+            .waitFor({ state: 'visible' });
+        await this.page
+            .locator('[aria-controls="pessoa-select-options"]')
+            .click();
+        const label = this.page.getByLabel(UI.LABELS.LEAD_LIST);
+        await label.getByRole('option').first().click();
+    }
+
+    async labelModalCategory(): Promise<void> {
+        await this.page.getByRole('button', { name: 'Abrir' }).last().click();
+        await this.page
+            .getByRole('listbox', { name: 'Lista de categorias' })
+            .waitFor({ state: 'visible' });
+        await this.page
+            .locator('[aria-controls="categoria-select-options"]')
+            .click();
+        const label = this.page.getByLabel(UI.LABELS.CATEGOY_LIST);
+        await label.getByRole('option').first().click();
+    }
+
+    async selectTipo(value: string): Promise<void> {
+        await this.locatorTipo().selectOption(value);
+    }
+
+    async getTipoOptions(): Promise<string[]> {
+        const options = await this.locatorTipo()
+            .locator('option')
+            .allTextContents();
+        return options.map(opt => opt.trim());
+    }
+
+    async getSelectedTipo(): Promise<string> {
+        return await this.locatorTipo().inputValue();
+    }
+
 }
 
 export class Visit {
@@ -210,7 +262,6 @@ export class Visit {
     constructor(page: Page) {
         this.page = page;
     }
-
     async Transactions(): Promise<void> {
         await this.page.goto('/transacoes');
     }
@@ -242,9 +293,10 @@ export class Form {
         await this.page.locator('input[name="dataNascimento"]').fill(data);
     }
 
-    async submitTransactionsForm(name: string, data: string): Promise<void> {
-        await this.page.getByPlaceholder('Digite o nome').fill(name);
-        await this.page.locator('input[name="dataNascimento"]').fill(data);
+    async submitTransactionsForm(name: string, data: string, numeric: number): Promise<void> {
+        await this.page.getByPlaceholder('Digite a descrição').fill(name);
+        await this.page.getByLabel('Valor').fill(numeric.toString());
+        await this.page.locator('input[name="data"]').fill(data);
     }
 }
 
@@ -263,6 +315,9 @@ export class Find {
     locatorFinalidade(): Locator {
         return this.page.locator('#finalidade');
     }
+    locatorTipo(): Locator {
+        return this.page.locator('tipo');
+    }
 }
 
 export class HaveText {
@@ -278,6 +333,16 @@ export class HaveText {
     async errorHaveText(target: string): Promise<void> {
         await expect(
             this.page.getByText(target)
+        ).toBeVisible();
+    }
+    async errorHaveTextLead(target: string): Promise<void> {
+        await expect(
+            this.page.getByText(target).first()
+        ).toBeVisible();
+    }
+    async errorHaveTextCategory(target: string): Promise<void> {
+        await expect(
+            this.page.getByText(target).last()
         ).toBeVisible();
     }
 }

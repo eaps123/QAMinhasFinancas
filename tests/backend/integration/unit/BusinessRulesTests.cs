@@ -13,10 +13,23 @@ public class BusinessRulesTests
         {
             DataNascimento = DateTime.Now.AddYears(-10)
         };
-
         var result = TransacaoValidator.PodeCriar(pessoa, TipoTransacao.Receita);
-
         result.Should().BeFalse();
+    }
+
+    [Theory]
+    [InlineData(18)]
+    [InlineData(19)]
+    [InlineData(20)]
+    [InlineData(120)]
+    public void PodeCriar_QuandoIdadeMaiorQue18_DeveDarSucesso(int idade)
+    {
+        var pessoa = new Pessoa
+        {
+            DataNascimento = DateTime.Now.AddYears(-idade)
+        };
+        var result = TransacaoValidator.PodeCriar(pessoa, TipoTransacao.Receita);
+        result.Should().BeTrue();
     }
 }
 public enum TipoTransacao
