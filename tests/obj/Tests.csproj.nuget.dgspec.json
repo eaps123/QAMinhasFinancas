@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "D:\\teste-tecnico-qa\\Tests\\Tests.csproj": {}
+    "D:\\teste-tecnico-qa\\tests\\Tests.csproj": {}
   },
   "projects": {
-    "D:\\teste-tecnico-qa\\Tests\\Tests.csproj": {
+    "D:\\teste-tecnico-qa\\tests\\Tests.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\teste-tecnico-qa\\Tests\\Tests.csproj",
+        "projectUniqueName": "D:\\teste-tecnico-qa\\tests\\Tests.csproj",
         "projectName": "Tests",
-        "projectPath": "D:\\teste-tecnico-qa\\Tests\\Tests.csproj",
+        "projectPath": "D:\\teste-tecnico-qa\\tests\\Tests.csproj",
         "packagesPath": "C:\\Users\\Usuario\\.nuget\\packages\\",
-        "outputPath": "D:\\teste-tecnico-qa\\Tests\\obj\\",
+        "outputPath": "D:\\teste-tecnico-qa\\tests\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\Usuario\\AppData\\Roaming\\NuGet\\NuGet.Config"
