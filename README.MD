@@ -29,7 +29,8 @@ Projeto de automação de testes para um sistema de controle financeiro, com foc
 Exemplo atual:
 
 INVALID_DATE: 'Invalid input: expected date, received Date'
-
+INVALID_VALUE: 'Invalid input: expected number, received NaN',
+INVALID_STRING: 'Invalid input: expected string, received undefined',
 
 Sugestão:
 
@@ -37,7 +38,6 @@ Data é obrigatória
 Informe um valor válido
 Pessoa é obrigatória
 Informe uma categoria
-
 
 ---
 
