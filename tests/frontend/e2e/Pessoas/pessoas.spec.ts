@@ -14,12 +14,12 @@ test('deve Cadastrar, Alterar e excluir uma pessoa', async ({ visit, modal, toas
   await modal.openModal(UI.BUTTONS.ADD_LEAD);
   await form.submitLeadForm('1- Automation '+leadName, leadData);
   await modal.buttonModal(UI.BUTTONS.SAVE);
-  await toast.containText(UI.MESSAGES.POST_LEAD_SUCCESS);
+  await toast.containTextLead(UI.MESSAGES.POST_LEAD_SUCCESS);
   await find.findLeadByName();
   await click.ByName('1- Automation '+leadName, UI.BUTTONS.EDIT);
   await form.submitLeadForm('1- Automation '+leadName+ ' Alterado', leadData);;
   await modal.buttonModal(UI.BUTTONS.SAVE);
-  await toast.containText(UI.MESSAGES.PUT_LEAD_SUCCESS);
+  await toast.containTextLead(UI.MESSAGES.PUT_LEAD_SUCCESS);
   await visit.Leads();
   await click.ByName('1- Automation '+leadName+ ' Alterado', UI.BUTTONS.DELETE);
   await modal.buttonModal(UI.BUTTONS.CONFIRM);

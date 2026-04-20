@@ -69,6 +69,11 @@ export class Toast {
             this.page.locator('[role="status"]')
         ).toContainText(message, { timeout: 5000 });
     }
+    async containTextLead(message: string): Promise<void> {
+        const toast = this.page.getByRole('status');
+        await expect(toast).toContainText(message);
+        await expect(toast).not.toBeVisible({ timeout: 5000 });
+    }
 }
 
 export class Popup {

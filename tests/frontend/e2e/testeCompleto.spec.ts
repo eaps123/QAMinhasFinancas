@@ -66,9 +66,8 @@ test('E2E - pessoa + transações + relatório + exclusão', async ({ pagination
 
     await test.step('Validar pessoa no relatório', async () => {
         await visit.Reports();
-        await expect(
-            paginations.itemExistsInTable(UI.SELECT.COMPLETO)
-        ).resolves.toBe(true);
+        const exists = await paginations.itemExistsInTable(UI.SELECT.COMPLETO);
+        expect(exists);
     });
 
     await test.step('Excluir pessoa', async () => {

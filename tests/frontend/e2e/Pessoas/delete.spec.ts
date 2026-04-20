@@ -7,10 +7,10 @@ faker.locale = 'pt_BR';
 test('deve excluir o cadastro da pessoa', async ({ visit, modal }) => {
   await visit.Leads();
   await modal.openModalFirst(UI.BUTTONS.DELETE);
-  await modal.buttonModal(UI.BUTTONS.DELETE);
+  await modal.buttonModal(UI.BUTTONS.CONFIRM);
 });
 
-test('deve cancelar a exclusÃ£o da pessoa', async ({ visit, modal }) => {
+test('deve cancelar a exclusão da pessoa', async ({ visit, modal }) => {
   await visit.Leads();
   await modal.openModalFirst(UI.BUTTONS.DELETE);
   await modal.buttonModal(UI.BUTTONS.CANCEL);
