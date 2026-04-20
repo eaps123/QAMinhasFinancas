@@ -8,10 +8,9 @@ export function getRandomTransactionValue(): number {
     return Number((Math.random() * 1000 + 1).toFixed(2));
 }
 
-test('deve cadastrar uma transação do tipo receita', async ({ visit, modal, toast, form }) => {
+test('deve cadastrar uma transação do tipo receita e categoria receita', async ({ visit, modal, toast, form }) => {
     await visit.Transactions();
     await modal.openModal(UI.BUTTONS.ADD_TRANSACTION);
-    const description = faker.name.fullName();
     const Data = new Date();
     Data.setDate(Data.getDate());
     const dataAtual = Data.toISOString().split('T')[0];
@@ -20,22 +19,21 @@ test('deve cadastrar uma transação do tipo receita', async ({ visit, modal, to
         UI.LABELS.DESPESA,
         UI.LABELS.RECEITA,
     ];
-    await form.submitTransactionsForm(description, dataAtual, valor);
+    await form.submitTransactionsForm('1- Automation Receita', dataAtual, valor);
     await modal.selectTipo(UI.VALUE.RECEITA);
     const options = await modal.getTipoOptions();
     expect(options).toEqual(
         expect.arrayContaining(expectedOptions)
     );
     await modal.labelModalLead();
-    await modal.labelModalCategory();
+    await modal.labelModalCategory(UI.SELECT.RECEITA);
     await modal.buttonModal(UI.BUTTONS.SAVE);
     await toast.containText(UI.MESSAGES.POST_TRANSACTION_SUCCESS);
 });
 
-test('deve cadastrar uma transação do tipo despesa', async ({ visit, modal, toast, form }) => {
+test('deve cadastrar uma transação do tipo despesa e categoria despesa', async ({ visit, modal, toast, form }) => {
     await visit.Transactions();
     await modal.openModal(UI.BUTTONS.ADD_TRANSACTION);
-    const description = faker.name.fullName();
     const Data = new Date();
     Data.setDate(Data.getDate());
     const dataAtual = Data.toISOString().split('T')[0];
@@ -44,14 +42,60 @@ test('deve cadastrar uma transação do tipo despesa', async ({ visit, modal, to
         UI.LABELS.DESPESA,
         UI.LABELS.RECEITA,
     ];
-    await form.submitTransactionsForm(description, dataAtual, valor);
+    await form.submitTransactionsForm('1- Automation Despesa', dataAtual, valor);
     await modal.selectTipo(UI.VALUE.DESPESA);
     const options = await modal.getTipoOptions();
     expect(options).toEqual(
         expect.arrayContaining(expectedOptions)
     );
     await modal.labelModalLead();
-    await modal.labelModalCategory();
+    await modal.labelModalCategory(UI.SELECT.DESPESA);
+    await modal.buttonModal(UI.BUTTONS.SAVE);
+    await toast.containText(UI.MESSAGES.POST_TRANSACTION_SUCCESS);
+});
+
+test('deve cadastrar uma transação do tipo despesa e categoria AMBAS', async ({ visit, modal, toast, form }) => {
+    await visit.Transactions();
+    await modal.openModal(UI.BUTTONS.ADD_TRANSACTION);
+    const Data = new Date();
+    Data.setDate(Data.getDate());
+    const dataAtual = Data.toISOString().split('T')[0];
+    const valor = getRandomTransactionValue();
+    const expectedOptions = [
+        UI.LABELS.DESPESA,
+        UI.LABELS.RECEITA,
+    ];
+    await form.submitTransactionsForm('1- Automation Despesa', dataAtual, valor);
+    await modal.selectTipo(UI.VALUE.DESPESA);
+    const options = await modal.getTipoOptions();
+    expect(options).toEqual(
+        expect.arrayContaining(expectedOptions)
+    );
+    await modal.labelModalLead();
+    await modal.labelModalCategory(UI.SELECT.AMBAS);
+    await modal.buttonModal(UI.BUTTONS.SAVE);
+    await toast.containText(UI.MESSAGES.POST_TRANSACTION_SUCCESS);
+});
+
+test('deve cadastrar uma transação do tipo receita e categoria AMBAS', async ({ visit, modal, toast, form }) => {
+    await visit.Transactions();
+    await modal.openModal(UI.BUTTONS.ADD_TRANSACTION);
+    const Data = new Date();
+    Data.setDate(Data.getDate());
+    const dataAtual = Data.toISOString().split('T')[0];
+    const valor = getRandomTransactionValue();
+    const expectedOptions = [
+        UI.LABELS.DESPESA,
+        UI.LABELS.RECEITA,
+    ];
+    await form.submitTransactionsForm('1- Automation Despesa', dataAtual, valor);
+    await modal.selectTipo(UI.VALUE.DESPESA);
+    const options = await modal.getTipoOptions();
+    expect(options).toEqual(
+        expect.arrayContaining(expectedOptions)
+    );
+    await modal.labelModalLead();
+    await modal.labelModalCategory(UI.SELECT.AMBAS);
     await modal.buttonModal(UI.BUTTONS.SAVE);
     await toast.containText(UI.MESSAGES.POST_TRANSACTION_SUCCESS);
 });
@@ -59,7 +103,6 @@ test('deve cadastrar uma transação do tipo despesa', async ({ visit, modal, to
 test('deve cadastrar uma transação do tipo receita com data futura', async ({ visit, modal, toast, form }) => {
     await visit.Transactions();
     await modal.openModal(UI.BUTTONS.ADD_TRANSACTION);
-    const description = faker.name.fullName();
     const Data = new Date();
     Data.setDate(Data.getDate()+ faker.datatype.number({ min: 1, max: 30 }));
     const dataAtual = Data.toISOString().split('T')[0];
@@ -68,14 +111,14 @@ test('deve cadastrar uma transação do tipo receita com data futura', async ({ 
         UI.LABELS.DESPESA,
         UI.LABELS.RECEITA,
     ];
-    await form.submitTransactionsForm(description, dataAtual, valor);
+    await form.submitTransactionsForm('1- Automation Receita', dataAtual, valor);
     await modal.selectTipo(UI.VALUE.RECEITA);
     const options = await modal.getTipoOptions();
     expect(options).toEqual(
         expect.arrayContaining(expectedOptions)
     );
     await modal.labelModalLead();
-    await modal.labelModalCategory();
+    await modal.labelModalCategory(UI.SELECT.AMBAS);
     await modal.buttonModal(UI.BUTTONS.SAVE);
     await toast.containText(UI.MESSAGES.POST_TRANSACTION_SUCCESS);
 });
@@ -83,7 +126,6 @@ test('deve cadastrar uma transação do tipo receita com data futura', async ({ 
 test('deve cadastrar uma transação do tipo despesa com data futura', async ({ visit, modal, toast, form }) => {
     await visit.Transactions();
     await modal.openModal(UI.BUTTONS.ADD_TRANSACTION);
-    const description = faker.name.fullName();
     const Data = new Date();
     Data.setDate(Data.getDate()+ faker.datatype.number({ min: 1, max: 30 }));
     const dataAtual = Data.toISOString().split('T')[0];
@@ -92,14 +134,14 @@ test('deve cadastrar uma transação do tipo despesa com data futura', async ({ 
         UI.LABELS.DESPESA,
         UI.LABELS.RECEITA,
     ];
-    await form.submitTransactionsForm(description, dataAtual, valor);
+    await form.submitTransactionsForm('1- Automation Despesa', dataAtual, valor);
     await modal.selectTipo(UI.VALUE.DESPESA);
     const options = await modal.getTipoOptions();
     expect(options).toEqual(
         expect.arrayContaining(expectedOptions)
     );
     await modal.labelModalLead();
-    await modal.labelModalCategory();
+    await modal.labelModalCategory(UI.SELECT.AMBAS);
     await modal.buttonModal(UI.BUTTONS.SAVE);
     await toast.containText(UI.MESSAGES.POST_TRANSACTION_SUCCESS);
 });
@@ -122,10 +164,80 @@ test('deve clickar fora do modal do cadastro de uma transação e fechar', async
     await modal.outsideModal();
 });
 
+test('não deve cadastrar uma transação do tipo receita com a categoria de despesa', async ({ visit, modal, toast, form }) => {
+    await visit.Transactions();
+    await modal.openModal(UI.BUTTONS.ADD_TRANSACTION);
+    const Data = new Date();
+    Data.setDate(Data.getDate());
+    const dataAtual = Data.toISOString().split('T')[0];
+    const valor = getRandomTransactionValue();
+    const expectedOptions = [
+        UI.LABELS.DESPESA,
+        UI.LABELS.RECEITA,
+    ];
+    await form.submitTransactionsForm('1- Automation Receita', dataAtual, valor);
+    await modal.selectTipo(UI.VALUE.RECEITA);
+    const options = await modal.getTipoOptions();
+    expect(options).toEqual(
+        expect.arrayContaining(expectedOptions)
+    );
+    await modal.labelModalLead();
+    await modal.labelModalCategory(UI.SELECT.DESPESA);
+    await modal.buttonModalErro(UI.BUTTONS.SAVE);
+    await toast.containText(UI.MESSAGES.POST_TRANSACTION_FAILED);
+});
+
+test('não deve cadastrar uma transação do tipo despesa com a categoria de receita', async ({ visit, modal, toast, form }) => {
+    await visit.Transactions();
+    await modal.openModal(UI.BUTTONS.ADD_TRANSACTION);
+    const Data = new Date();
+    Data.setDate(Data.getDate());
+    const dataAtual = Data.toISOString().split('T')[0];
+    const valor = getRandomTransactionValue();
+    const expectedOptions = [
+        UI.LABELS.DESPESA,
+        UI.LABELS.RECEITA,
+    ];
+    await form.submitTransactionsForm('1- Automation Receita', dataAtual, valor);
+    await modal.selectTipo(UI.VALUE.DESPESA);
+    const options = await modal.getTipoOptions();
+    expect(options).toEqual(
+        expect.arrayContaining(expectedOptions)
+    );
+    await modal.labelModalLead();
+    await modal.labelModalCategory(UI.SELECT.RECEITA);
+    await modal.buttonModalErro(UI.BUTTONS.SAVE);
+    await toast.containText(UI.MESSAGES.POST_TRANSACTION_FAILED);
+});
+
+test('não deve cadastrar uma transação do tipo receita com a categoria de receita para um menor de idade', async ({ visit, modal, toast, form, haveText }) => {
+    await visit.Transactions();
+    await modal.openModal(UI.BUTTONS.ADD_TRANSACTION);
+    const Data = new Date();
+    Data.setDate(Data.getDate());
+    const dataAtual = Data.toISOString().split('T')[0];
+    const valor = getRandomTransactionValue();
+    const expectedOptions = [
+        UI.LABELS.DESPESA,
+        UI.LABELS.RECEITA,
+    ];
+    await form.submitTransactionsForm('1- Automation Receita', dataAtual, valor);
+    await modal.selectTipo(UI.VALUE.RECEITA);
+    const options = await modal.getTipoOptions();
+    expect(options).toEqual(
+        expect.arrayContaining(expectedOptions)
+    );
+    await modal.labelModalLeadName(UI.SELECT.MENOR);
+    await modal.labelModalCategory(UI.SELECT.RECEITA);
+    await modal.buttonModalErro(UI.BUTTONS.SAVE);
+    await haveText.errorHaveText(UI.MESSAGES.KID_ALERT);
+    await toast.containText(UI.MESSAGES.KID_NO_TRANSACTION);
+});
+
 test('não deve cadastrar uma transação do tipo despesa com valor negativo', async ({ visit, modal, haveText, form }) => {
     await visit.Transactions();
     await modal.openModal(UI.BUTTONS.ADD_TRANSACTION);
-    const description = faker.name.fullName();
+    const description = faker.company.name();
     const Data = new Date();
     Data.setDate(Data.getDate());
     const dataAtual = Data.toISOString().split('T')[0];
@@ -134,14 +246,14 @@ test('não deve cadastrar uma transação do tipo despesa com valor negativo', a
         UI.LABELS.DESPESA,
         UI.LABELS.RECEITA,
     ];
-    await form.submitTransactionsForm(description, dataAtual, valor);
+    await form.submitTransactionsForm('1- Automation '+description, dataAtual, valor);
     await modal.selectTipo(UI.VALUE.DESPESA);
     const options = await modal.getTipoOptions();
     expect(options).toEqual(
         expect.arrayContaining(expectedOptions)
     );
     await modal.labelModalLead();
-    await modal.labelModalCategory();
+    await modal.labelModalCategory(UI.SELECT.DESPESA);
     await modal.buttonModal(UI.BUTTONS.SAVE);
     await haveText.errorHaveText(UI.MESSAGES.NEGATIVE_VALUE);
 });
@@ -149,7 +261,7 @@ test('não deve cadastrar uma transação do tipo despesa com valor negativo', a
 test('não deve cadastrar uma transação do tipo receita com valor negativo', async ({ visit, modal, haveText, form }) => {
     await visit.Transactions();
     await modal.openModal(UI.BUTTONS.ADD_TRANSACTION);
-    const description = faker.name.fullName();
+    const description = faker.company.name();
     const Data = new Date();
     Data.setDate(Data.getDate());
     const dataAtual = Data.toISOString().split('T')[0];
@@ -158,14 +270,14 @@ test('não deve cadastrar uma transação do tipo receita com valor negativo', a
         UI.LABELS.DESPESA,
         UI.LABELS.RECEITA,
     ];
-    await form.submitTransactionsForm(description, dataAtual, valor);
+    await form.submitTransactionsForm('1- Automation '+description, dataAtual, valor);
     await modal.selectTipo(UI.VALUE.RECEITA);
     const options = await modal.getTipoOptions();
     expect(options).toEqual(
         expect.arrayContaining(expectedOptions)
     );
     await modal.labelModalLead();
-    await modal.labelModalCategory();
+    await modal.labelModalCategory(UI.SELECT.RECEITA);
     await modal.buttonModal(UI.BUTTONS.SAVE);
     await haveText.errorHaveText(UI.MESSAGES.NEGATIVE_VALUE);
 });
@@ -173,7 +285,7 @@ test('não deve cadastrar uma transação do tipo receita com valor negativo', a
 test('não deve cadastrar uma transação quando a descrição não é preenchida', async ({ visit, modal, haveText, form }) => {
     await visit.Transactions();
     await modal.openModal(UI.BUTTONS.ADD_TRANSACTION);
-    const description = faker.name.fullName();
+    const description = faker.company.name();
     const Data = new Date();
     Data.setDate(Data.getDate());
     const dataAtual = Data.toISOString().split('T')[0];
@@ -189,7 +301,7 @@ test('não deve cadastrar uma transação quando a descrição não é preenchid
         expect.arrayContaining(expectedOptions)
     );
     await modal.labelModalLead();
-    await modal.labelModalCategory();
+    await modal.labelModalCategory(UI.SELECT.AMBAS);
     await modal.buttonModal(UI.BUTTONS.SAVE);
     await haveText.errorHaveText(UI.MESSAGES.DESCRIBE_REQUIRED);
 });
@@ -197,7 +309,7 @@ test('não deve cadastrar uma transação quando a descrição não é preenchid
 test('não deve cadastrar uma transação quando a data não é preenchida', async ({ visit, modal, haveText, form }) => {
     await visit.Transactions();
     await modal.openModal(UI.BUTTONS.ADD_TRANSACTION);
-    const description = faker.name.fullName();
+    const description = faker.company.name();
     const Data = new Date();
     Data.setDate(Data.getDate());
     const dataAtual = Data.toISOString().split('T')[0];
@@ -206,14 +318,14 @@ test('não deve cadastrar uma transação quando a data não é preenchida', asy
         UI.LABELS.DESPESA,
         UI.LABELS.RECEITA,
     ];
-    await form.submitTransactionsForm(description, '', valor);
+    await form.submitTransactionsForm('1- Automation '+description, '', valor);
     await modal.selectTipo(UI.VALUE.DESPESA);
     const options = await modal.getTipoOptions();
     expect(options).toEqual(
         expect.arrayContaining(expectedOptions)
     );
     await modal.labelModalLead();
-    await modal.labelModalCategory();
+    await modal.labelModalCategory(UI.SELECT.AMBAS);
     await modal.buttonModal(UI.BUTTONS.SAVE);
     await haveText.errorHaveText(UI.MESSAGES.INVALID_DATE);
 });

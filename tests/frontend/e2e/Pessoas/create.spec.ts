@@ -18,6 +18,19 @@ test('deve cadastrar uma pessoa', async ({ visit, modal, toast, form }) => {
   await toast.containText(UI.MESSAGES.POST_LEAD_SUCCESS);
 });
 
+test('deve cadastrar uma pessoa menor de idade', async ({ visit, modal, toast, form }) => {
+  const leadData = faker.date
+    .birthdate({ mode: 'age', min: 1, max: 17 })
+    .toISOString()
+    .split('T')[0];
+
+  await visit.Leads();
+  await modal.openModal(UI.BUTTONS.ADD_LEAD);
+  await form.submitLeadForm('1- Automation Kid', leadData);
+  await modal.buttonModal(UI.BUTTONS.SAVE);
+  await toast.containText(UI.MESSAGES.POST_LEAD_SUCCESS);
+});
+
 test('deve cancelar o cadastro de pessoa', async ({ visit, modal }) => {
   await visit.Leads();
   await modal.openModal(UI.BUTTONS.ADD_LEAD);
